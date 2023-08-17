@@ -18,6 +18,8 @@
 #include <driver/ledc.h>
 #endif
 
+#include "flow3r_bsp_display.h"
+
 #define SPI_TRANSACTION_COUNT (8)
 #define SPI_BUFFER_COUNT      (5)
 #define SPI_BUFFER_LENGTH     (320 * 4) // In pixels (uint16)
@@ -238,6 +240,11 @@ static void lcd_send_buffer(int left, int top, int width, int height, lcd_buffer
 }
 
 static void lcd_init(void)
+{
+    flow3r_bsp_display_init();
+}
+
+static void lcd_init_fuckup(void)
 {
 #if defined(RG_GPIO_LCD_BCKL)
     // Initialize backlight at 0% to avoid the lcd reset flash
