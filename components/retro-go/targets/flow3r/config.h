@@ -69,13 +69,13 @@
 #define RG_GPIO_GAMEPAD_OPTION      GPIO_NUM_0
 
 // SPI Display
-// TODO, MK:
+// TODO, MK: is the MISO pin required? (not specified in flow3r-minimal)
 #define RG_GPIO_LCD_MISO            GPIO_NUM_19
-#define RG_GPIO_LCD_MOSI            GPIO_NUM_23
-#define RG_GPIO_LCD_CLK             GPIO_NUM_18
-#define RG_GPIO_LCD_CS              GPIO_NUM_5
-#define RG_GPIO_LCD_DC              GPIO_NUM_21
-#define RG_GPIO_LCD_BCKL            GPIO_NUM_14
+#define RG_GPIO_LCD_MOSI            42
+#define RG_GPIO_LCD_CLK             41
+#define RG_GPIO_LCD_CS              40
+#define RG_GPIO_LCD_DC              38
+#define RG_GPIO_LCD_BCKL            46
 
 // SPI SD Card
 // TODO, MK:
