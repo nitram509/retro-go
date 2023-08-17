@@ -4,16 +4,19 @@
 #define RG_TARGET_NAME             "FLOW3R"
 
 // Storage and Settings
+// TODO, MK:
 #define RG_STORAGE_DRIVER           1                   // 0 = Host, 1 = SDSPI, 2 = SDMMC, 3 = USB, 4 = Flash
 #define RG_STORAGE_HOST             SPI2_HOST           // Used by SDSPI and SDMMC
 #define RG_STORAGE_SPEED            SDMMC_FREQ_DEFAULT  // Used by SDSPI and SDMMC
 #define RG_STORAGE_ROOT             "/sd"               // Storage mount point
 
 // Audio
-#define RG_AUDIO_USE_INT_DAC        3   // 0 = Disable, 1 = GPIO25, 2 = GPIO26, 3 = Both
-#define RG_AUDIO_USE_EXT_DAC        1   // 0 = Disable, 1 = Enable
+// TODO, MK: r-enable
+#define RG_AUDIO_USE_INT_DAC        0   // 0 = Disable, 1 = GPIO25, 2 = GPIO26, 3 = Both
+#define RG_AUDIO_USE_EXT_DAC        0   // 0 = Disable, 1 = Enable
 
 // Video
+// TODO, MK:
 #define RG_SCREEN_DRIVER            0   // 0 = ILI9341
 #define RG_SCREEN_HOST              SPI2_HOST
 #define RG_SCREEN_SPEED             SPI_MASTER_FREQ_40M
@@ -27,6 +30,7 @@
 #define RG_SCREEN_MARGIN_RIGHT      20
 
 // Input
+// TODO, MK:
 #define RG_GAMEPAD_DRIVER           1   // 1 = ODROID-GO, 2 = Serial, 3 = I2C, 4 = AW9523, 5 = ESPLAY-S3, 6 = SDL2
 #define RG_GAMEPAD_HAS_MENU_BTN     0
 #define RG_GAMEPAD_HAS_OPTION_BTN   0
@@ -40,11 +44,13 @@
 }
 
 // Battery
+// TODO, MK:
 #define RG_BATTERY_ADC_CHANNEL      ADC1_CHANNEL_0
 #define RG_BATTERY_CALC_PERCENT(raw) (((raw) * 2.f - 3500.f) / (4200.f - 3500.f) * 100.f)
 #define RG_BATTERY_CALC_VOLTAGE(raw) ((raw) * 2.f * 0.001f)
 
 // Status LED
+// TODO, MK:
 #define RG_GPIO_LED                 GPIO_NUM_2
 
 // I2C BUS
@@ -52,6 +58,7 @@
 // #define RG_GPIO_I2C_SCL             GPIO_NUM_4
 
 // Built-in gamepad
+// TODO, MK:
 #define RG_GPIO_GAMEPAD_X           ADC1_CHANNEL_6
 #define RG_GPIO_GAMEPAD_Y           ADC1_CHANNEL_7
 #define RG_GPIO_GAMEPAD_SELECT      GPIO_NUM_27
@@ -62,6 +69,7 @@
 #define RG_GPIO_GAMEPAD_OPTION      GPIO_NUM_0
 
 // SPI Display
+// TODO, MK:
 #define RG_GPIO_LCD_MISO            GPIO_NUM_19
 #define RG_GPIO_LCD_MOSI            GPIO_NUM_23
 #define RG_GPIO_LCD_CLK             GPIO_NUM_18
@@ -70,12 +78,14 @@
 #define RG_GPIO_LCD_BCKL            GPIO_NUM_14
 
 // SPI SD Card
+// TODO, MK:
 #define RG_GPIO_SDSPI_MISO          GPIO_NUM_19
 #define RG_GPIO_SDSPI_MOSI          GPIO_NUM_23
 #define RG_GPIO_SDSPI_CLK           GPIO_NUM_18
 #define RG_GPIO_SDSPI_CS            GPIO_NUM_22
 
 // External I2S DAC
+// TODO, MK:
 #define RG_GPIO_SND_I2S_BCK         GPIO_NUM_4
 #define RG_GPIO_SND_I2S_WS          GPIO_NUM_12
 #define RG_GPIO_SND_I2S_DATA        GPIO_NUM_15
