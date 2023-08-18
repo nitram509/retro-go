@@ -1,6 +1,7 @@
 #include "flow3r_bsp_display.h"
 
 #include <string.h>
+#include <stdlib.h>
 
 #include "esp_log.h"
 #include "sdkconfig.h"

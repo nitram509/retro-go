@@ -242,9 +242,10 @@ static void lcd_send_buffer(int left, int top, int width, int height, lcd_buffer
 static void lcd_init(void)
 {
     flow3r_bsp_display_init();
+    flow3r_bsp_display_set_backlight(100);
 }
 
-static void lcd_init_fuckup(void)
+static void lcd_init_retro_go(void)
 {
 #if defined(RG_GPIO_LCD_BCKL)
     // Initialize backlight at 0% to avoid the lcd reset flash
