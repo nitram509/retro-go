@@ -79,10 +79,13 @@
 
 // SPI SD Card
 // TODO, MK:
-#define RG_GPIO_SDSPI_MISO          GPIO_NUM_19
-#define RG_GPIO_SDSPI_MOSI          GPIO_NUM_23
-#define RG_GPIO_SDSPI_CLK           GPIO_NUM_18
-#define RG_GPIO_SDSPI_CS            GPIO_NUM_22
+#define RG_GPIO_SDSPI_MISO          0 // GPIO_NUM_19
+#define RG_GPIO_SDSPI_MOSI          0 // GPIO_NUM_23
+#define RG_GPIO_SDSPI_CLK           0 // GPIO_NUM_18
+#define RG_GPIO_SDSPI_CS            0 // GPIO_NUM_22
+// only required, when RG_STORAGE_DRIVER == 2
+#define RG_GPIO_SDSPI_CMD           0 // GPIO_NUM_14
+#define RG_GPIO_SDSPI_D0            0 // GPIO_NUM_17
 
 // External I2S DAC
 // TODO, MK:
