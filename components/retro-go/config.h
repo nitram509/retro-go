@@ -1,3 +1,4 @@
+#define RG_TARGET_FLOW3R
 #if defined(RG_TARGET_ODROID_GO)
 #include "targets/odroid-go/config.h"
 #elif defined(RG_TARGET_MRGC_G32)

@@ -19,10 +19,11 @@
 #endif
 
 #include "flow3r_bsp_display.h"
+#include "doom.h"
 
 #define SPI_TRANSACTION_COUNT (8)
 #define SPI_BUFFER_COUNT      (5)
-#define SPI_BUFFER_LENGTH     (320 * 4) // In pixels (uint16)
+#define SPI_BUFFER_LENGTH     (240 * 4) // In pixels (uint16)
 
 static spi_device_handle_t spi_dev;
 static QueueHandle_t spi_transactions;
@@ -239,10 +240,13 @@ static void lcd_send_buffer(int left, int top, int width, int height, lcd_buffer
     lcd_send_data(buffer->ptr, width * height * 2);
 }
 
+static uint16_t *line_buffer;
 static void lcd_init(void)
 {
     flow3r_bsp_display_init();
-    flow3r_bsp_display_set_backlight(100);
+    flow3r_bsp_display_set_backlight(25);
+    flow3r_bsp_display_send_indexed_fb(header_data, header_data_cmap);
+    line_buffer = rg_alloc(SPI_BUFFER_LENGTH * 2, MEM_DMA);
 }
 
 static void lcd_init_retro_go(void)
@@ -460,7 +464,7 @@ static inline void write_rect(int left, int top, int width, int height,
     const int screen_top = display.viewport.y_pos + scaled_top;
     const int screen_left = display.viewport.x_pos + scaled_left;
     const int screen_bottom = RG_MIN(screen_top + scaled_height, screen_height);
-    const int lines_per_buffer = SPI_BUFFER_LENGTH / scaled_width;
+    const int lines_per_buffer = 1;
     const int ix_acc = (x_inc * scaled_left) % screen_width;
     const int filter_mode = config.scaling ? config.filter : 0;
     const bool filter_y = filter_mode == RG_DISPLAY_FILTER_VERT || filter_mode == RG_DISPLAY_FILTER_BOTH;
@@ -469,124 +473,7 @@ static inline void write_rect(int left, int top, int width, int height,
     const int stride = display.source.stride;
     union { const uint8_t *u8; const uint16_t *u16; } buffer;
 
-    if (scaled_width < 1 || scaled_height < 1)
-    {
-        return;
-    }
-
-    buffer.u8 = framebuffer + display.source.offset + (top * stride) + (left * display.source.pixlen);
-
-    lcd_set_window(
-        screen_left + RG_SCREEN_MARGIN_LEFT,
-        screen_top + RG_SCREEN_MARGIN_TOP,
-        scaled_width,
-        scaled_height
-    );
-
-    for (int y = 0, screen_y = screen_top; y < height;)
-    {
-        int lines_to_copy = RG_MIN(lines_per_buffer, screen_bottom - screen_y);
-
-        // The vertical filter requires a block to start and end with unscaled lines
-        if (filter_y)
-        {
-            while (lines_to_copy > 1 && (screen_line_is_empty[screen_y + lines_to_copy - 1] ||
-                                         screen_line_is_empty[screen_y + lines_to_copy]))
-                --lines_to_copy;
-        }
-
-        if (lines_to_copy < 1)
-        {
-            break;
-        }
-
-        uint16_t *line_buffer = lcd_get_buffer().ptr;
-        uint16_t *line_buffer_ptr = line_buffer;
-
-        for (int i = 0; i < lines_to_copy; ++i)
-        {
-            if (i > 0 && screen_line_is_empty[screen_y])
-            {
-                memcpy(line_buffer_ptr, line_buffer_ptr - scaled_width, scaled_width * 2);
-                line_buffer_ptr += scaled_width;
-            }
-            else
-            {
-                #define RENDER_LINE(pixel) { \
-                    for (int x = 0, x_acc = ix_acc; x < width;) { \
-                        *line_buffer_ptr++ = (pixel); \
-                        x_acc += x_inc; \
-                        while (x_acc >= screen_width) { \
-                            x_acc -= screen_width; \
-                            ++x; \
-                        } \
-                    } \
-                }
-                if (format & RG_PIXEL_PAL)
-                    RENDER_LINE(palette[buffer.u8[x]])
-                else if (format & RG_PIXEL_LE)
-                    RENDER_LINE((buffer.u16[x] << 8) | (buffer.u16[x] >> 8))
-                else
-                    RENDER_LINE(buffer.u16[x])
-            }
-
-            if (!screen_line_is_empty[++screen_y])
-            {
-                buffer.u8 += stride;
-                ++y;
-            }
-        }
-
-        if (filter_y || filter_x)
-        {
-            const int top = screen_y - lines_to_copy;
-
-            for (int y = 0, fill_line = -1; y < lines_to_copy; y++)
-            {
-                if (filter_y && y && screen_line_is_empty[top + y])
-                {
-                    fill_line = y;
-                    continue;
-                }
-
-                // Filter X
-                if (filter_x)
-                {
-                    uint16_t *buffer = line_buffer + y * scaled_width;
-                    for (int x = 0, frame_x = 0, prev_frame_x = -1, x_acc = ix_acc; x < scaled_width; ++x)
-                    {
-                        if (frame_x == prev_frame_x && x > 0 && x + 1 < scaled_width)
-                        {
-                            buffer[x] = blend_pixels(buffer[x - 1], buffer[x + 1]);
-                        }
-                        prev_frame_x = frame_x;
-
-                        x_acc += x_inc;
-                        while (x_acc >= screen_width)
-                        {
-                            x_acc -= screen_width;
-                            ++frame_x;
-                        }
-                    }
-                }
-
-                // Filter Y
-                if (filter_y && fill_line > 0)
-                {
-                    uint16_t *lineA = line_buffer + (fill_line - 1) * scaled_width;
-                    uint16_t *lineB = line_buffer + (fill_line + 0) * scaled_width;
-                    uint16_t *lineC = line_buffer + (fill_line + 1) * scaled_width;
-                    for (size_t x = 0; x < scaled_width; ++x)
-                    {
-                        lineB[x] = blend_pixels(lineA[x], lineC[x]);
-                    }
-                    fill_line = -1;
-                }
-            }
-        }
-
-        lcd_send_data(line_buffer, scaled_width * lines_to_copy * 2);
-    }
+    flow3r_bsp_display_send_indexed_fb(framebuffer, palette);
 }
 
 static void update_viewport_scaling(void)
@@ -676,6 +563,10 @@ static void display_task(void *arg)
             update_viewport_scaling();
             update->type = RG_UPDATE_FULL;
             display.changed = false;
+        }
+
+        if (update->type != RG_UPDATE_FULL) {
+            return;
         }
 
         if (update->type == RG_UPDATE_FULL)

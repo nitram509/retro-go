@@ -390,19 +390,19 @@ rg_app_t *rg_system_init(int sampleRate, const rg_handlers_t *handlers, const rg
     RG_LOGI("External memory: free=%d, total=%d\n", statistics.freeMemoryExt, statistics.totalMemoryExt);
 
     rg_storage_init();
-    rg_input_init();
+    // rg_input_init();
 
-    // Test for recovery request as early as possible
-    for (int timeout = 5, btn; (btn = rg_input_read_gamepad() & RG_RECOVERY_BTN) && timeout >= 0; --timeout)
-    {
-        RG_LOGW("Button " PRINTF_BINARY_16 " being held down...\n", PRINTF_BINVAL_16(btn));
-        rg_task_delay(100);
-        if (timeout > 0)
-            continue;
-        rg_display_init();
-        rg_gui_init();
-        enter_recovery_mode();
-    }
+    // // Test for recovery request as early as possible
+    // for (int timeout = 5, btn; (btn = rg_input_read_gamepad() & RG_RECOVERY_BTN) && timeout >= 0; --timeout)
+    // {
+    //     RG_LOGW("Button " PRINTF_BINARY_16 " being held down...\n", PRINTF_BINVAL_16(btn));
+    //     rg_task_delay(100);
+    //     if (timeout > 0)
+    //         continue;
+    //     rg_display_init();
+    //     rg_gui_init();
+    //     enter_recovery_mode();
+    // }
 
     rg_settings_init();
     app.configNs = rg_settings_get_string(NS_BOOT, SETTING_BOOT_NAME, app.name);
@@ -412,11 +412,11 @@ rg_app_t *rg_system_init(int sampleRate, const rg_handlers_t *handlers, const rg
     app.romPath = app.bootArgs;
 
     rg_display_init();
-    rg_gui_init();
-    rg_audio_init(sampleRate);
+    // rg_gui_init();
+    // rg_audio_init(sampleRate);
 
-    rg_storage_set_activity_led(rg_storage_get_activity_led());
-    rg_gui_draw_hourglass();
+    // rg_storage_set_activity_led(rg_storage_get_activity_led());
+    // rg_gui_draw_hourglass();
 
     // Show alert if we've just rebooted from a panic
     if (app.bootType == RG_RST_PANIC)

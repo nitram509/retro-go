@@ -428,12 +428,12 @@ void I_StartTic(void)
     {
         if (joystick & RG_KEY_OPTION)
         {
-            rg_gui_options_menu();
+            // rg_gui_options_menu();
             changed = 0;
         }
         else if (rg_menu_delay++ == TICRATE / 2)
         {
-            rg_gui_game_menu();
+            // rg_gui_game_menu();
         }
         realtic_clock_rate = app->speed * 100;
         R_InitInterpolation();
@@ -500,7 +500,7 @@ static void event_handler(int event, void *arg)
         // DOOM fully fills the internal heap and this causes some shutdown
         // steps to fail so we try to free everything!
         Z_FreeTags(0, PU_MAX);
-        rg_audio_set_mute(true);
+        // rg_audio_set_mute(true);
     }
     return;
 }
@@ -529,6 +529,7 @@ void app_main()
 
     app = rg_system_init(AUDIO_SAMPLE_RATE, &handlers, options);
     app->refreshRate = TICRATE;
+    app->logLevel = RG_LOG_DEBUG;
 
     update.buffer = rg_alloc(SCREENHEIGHT*SCREENWIDTH, MEM_FAST);
 
@@ -537,14 +538,18 @@ void app_main()
     const char *pwad = NULL;
     FILE *fp;
 
-    if ((fp = fopen(app->romPath, "rb")))
+    if ((fp = fopen(RG_STORAGE_ROOT "/doom.wad", "rb")))
     {
-        if (fgetc(fp) == 'P')
+        const char c = fgetc(fp);
+        printf("WAD loaded, first char: %c\n", c);
+        if (c == 'P')
             pwad = app->romPath;
         else
-            iwad = app->romPath;
+            iwad = RG_STORAGE_ROOT "/doom.wad";
         fclose(fp);
     }
+    printf("FP: %p\n", fp);
+    printf("IWAD: %s\n", iwad);
 
     if (!iwad)
         iwad = rg_gui_file_picker("Select WAD file", I_DoomExeDir(), is_iwad);
@@ -560,8 +565,9 @@ void app_main()
         myargc = 5;
     }
 
-    rg_display_clear(C_BLACK);
+    // rg_display_clear(C_BLACK);
 
+    printf("Impending DOOM!\n");
     Z_Init();
     D_DoomMain();
 }

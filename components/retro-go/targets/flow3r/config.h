@@ -5,9 +5,9 @@
 
 // Storage and Settings
 // TODO, MK:
-#define RG_STORAGE_DRIVER           1                   // 0 = Host, 1 = SDSPI, 2 = SDMMC, 3 = USB, 4 = Flash
-#define RG_STORAGE_HOST             SPI2_HOST           // Used by SDSPI and SDMMC
-#define RG_STORAGE_SPEED            SDMMC_FREQ_DEFAULT  // Used by SDSPI and SDMMC
+#define RG_STORAGE_DRIVER           2                   // 0 = Host, 1 = SDSPI, 2 = SDMMC, 3 = USB, 4 = Flash
+#define RG_STORAGE_HOST             SDMMC_HOST_SLOT_1   // Used by driver 1 and 2
+#define RG_STORAGE_SPEED            SDMMC_FREQ_DEFAULT  // Used by driver 1 and 2
 #define RG_STORAGE_ROOT             "/sd"               // Storage mount point
 
 // Audio
@@ -79,17 +79,17 @@
 
 // SPI SD Card
 // TODO, MK:
-#define RG_GPIO_SDSPI_MISO          0 // GPIO_NUM_19
-#define RG_GPIO_SDSPI_MOSI          0 // GPIO_NUM_23
-#define RG_GPIO_SDSPI_CLK           0 // GPIO_NUM_18
-#define RG_GPIO_SDSPI_CS            0 // GPIO_NUM_22
-// only required, when RG_STORAGE_DRIVER == 2
-#define RG_GPIO_SDSPI_CMD           0 // GPIO_NUM_14
-#define RG_GPIO_SDSPI_D0            0 // GPIO_NUM_17
+#define RG_GPIO_SDSPI_CMD          GPIO_NUM_48
+#define RG_GPIO_SDSPI_CLK          GPIO_NUM_47
+#define RG_GPIO_SDSPI_D0           GPIO_NUM_21
+// #define RG_GPIO_SDSPI_MISO          0 // GPIO_NUM_19
+// #define RG_GPIO_SDSPI_MOSI          0 // GPIO_NUM_23
+// #define RG_GPIO_SDSPI_CLK           0 // GPIO_NUM_18
+// #define RG_GPIO_SDSPI_CS            0 // GPIO_NUM_22
 
 // External I2S DAC
 // TODO, MK:
-#define RG_GPIO_SND_I2S_BCK         GPIO_NUM_4
-#define RG_GPIO_SND_I2S_WS          GPIO_NUM_12
-#define RG_GPIO_SND_I2S_DATA        GPIO_NUM_15
+#define RG_GPIO_SND_I2S_BCK         0 // GPIO_NUM_4
+#define RG_GPIO_SND_I2S_WS          0 // GPIO_NUM_12
+#define RG_GPIO_SND_I2S_DATA        0 // GPIO_NUM_15
 // #define RG_GPIO_SND_AMP_ENABLE      GPIO_NUM_NC

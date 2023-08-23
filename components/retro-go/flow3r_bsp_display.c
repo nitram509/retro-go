@@ -1,7 +1,6 @@
 #include "flow3r_bsp_display.h"
 
 #include <string.h>
-#include <stdlib.h>
 
 #include "esp_log.h"
 #include "sdkconfig.h"
@@ -34,6 +33,27 @@ void flow3r_bsp_display_init(void) {
     } else {
         gc9a01_initialized = 1;
         ESP_LOGI(TAG, "gc9a01 initialized");
+    }
+}
+
+void flow3r_bsp_display_send_indexed_fb(uint8_t *fb_data, uint16_t palette[]) {
+
+    if (!gc9a01_initialized) {
+        return;
+    }
+    static bool had_error = false;
+
+    esp_err_t ret = flow3r_bsp_gc9a01_blit_indexed(&gc9a01, fb_data, palette);
+    if (ret != ESP_OK) {
+        if (!had_error) {
+            ESP_LOGE(TAG, "display blit failed: %s", esp_err_to_name(ret));
+            had_error = true;
+        }
+    } else {
+        if (had_error) {
+            ESP_LOGI(TAG, "display blit success!");
+            had_error = false;
+        }
     }
 }
 

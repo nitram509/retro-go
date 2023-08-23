@@ -82,6 +82,10 @@
 #define MADCTL_BGR 0x08
 #define MADCTL_MH 0x04
 
+#define DISPLAY_WIDTH 240
+#define DISPLAY_HEIGHT 240
+
+static uint16_t indexed_blit_buffer[DISPLAY_WIDTH];
 static const char *TAG = "flow3r-bsp-gc9a01";
 
 // Transaction 'user' structure as used by SPI transactions to the display.
@@ -604,6 +608,45 @@ static esp_err_t flow3r_bsp_gc9a01_blit_start(flow3r_bsp_gc9a01_t *gc9a01,
     return flow3r_bsp_gc9a01_cmd_sync(gc9a01, Cmd_RAMWR);
 }
 
+static esp_err_t flow3r_bsp_gc9a01_blit_indexed_next(flow3r_bsp_gc9a01_blit_t *blit, uint16_t palette[]) {
+    size_t size = blit->left;
+    if (size > DISPLAY_WIDTH) {
+        size = DISPLAY_WIDTH;
+    }
+    if (size > SPI_MAX_DMA_LEN) {
+        size = SPI_MAX_DMA_LEN;
+    }
+
+    for (size_t x = 0; x < size; x++) {
+            indexed_blit_buffer[x] = palette[blit->fb[x]];
+    }    
+
+    blit->gc9a01_tx.gc9a01 = blit->gc9a01;
+    blit->gc9a01_tx.dc = 1;
+
+    // Memzero spi_tx as it gets written by the SPI driver after each
+    // transaction.
+    memset(&blit->spi_tx, 0, sizeof(spi_transaction_t));
+    blit->spi_tx.length = size * 16;
+    blit->spi_tx.tx_buffer = indexed_blit_buffer;
+    blit->spi_tx.user = &blit->gc9a01_tx;
+
+    blit->left -= size;
+    blit->fb += size;
+
+    esp_err_t res =
+        spi_device_queue_trans(blit->gc9a01->spi, &blit->spi_tx, portMAX_DELAY);
+    if (res != ESP_OK) {
+        ESP_LOGE(TAG,
+                 "spi_device_queue_trans (size %d, buf %p, dma capab: %d, "
+                 "largest block: %d): %s",
+                 size, blit->fb, esp_ptr_dma_capable(blit->fb),
+                 heap_caps_get_largest_free_block(MALLOC_CAP_DMA),
+                 esp_err_to_name(res));
+    }
+    return res;
+}
+
 static uint8_t flow3r_bsp_gc9a01_blit_done(flow3r_bsp_gc9a01_blit_t *blit) {
     return blit->left == 0;
 }
@@ -628,6 +671,32 @@ esp_err_t flow3r_bsp_gc9a01_blit_full(flow3r_bsp_gc9a01_t *gc9a01,
 
     while (!flow3r_bsp_gc9a01_blit_done(&blit)) {
         res = flow3r_bsp_gc9a01_blit_next(&blit);
+        if (res != ESP_OK) {
+            return res;
+        }
+        res = flow3r_bsp_gc9a01_blit_wait_done(&blit, portMAX_DELAY);
+        if (res != ESP_OK) {
+            return res;
+        }
+    }
+    return ESP_OK;
+}
+
+esp_err_t flow3r_bsp_gc9a01_blit_indexed(flow3r_bsp_gc9a01_t *gc9a01, const uint8_t *fb, uint16_t palette[]) {
+    flow3r_bsp_gc9a01_blit_t blit;
+    memset(&blit, 0, sizeof(flow3r_bsp_gc9a01_blit_t));
+
+    blit.gc9a01 = gc9a01;
+    blit.fb = (const uint8_t *)fb;
+    blit.left = 240 * 240;
+
+    esp_err_t res = flow3r_bsp_gc9a01_cmd_sync(gc9a01, Cmd_RAMWR);
+    if (res != ESP_OK) {
+        return res;
+    }
+
+    while (!flow3r_bsp_gc9a01_blit_done(&blit)) {
+        res = flow3r_bsp_gc9a01_blit_indexed_next(&blit, palette);
         if (res != ESP_OK) {
             return res;
         }

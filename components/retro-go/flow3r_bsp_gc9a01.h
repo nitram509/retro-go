@@ -64,6 +64,9 @@ esp_err_t flow3r_bsp_gc9a01_init(flow3r_bsp_gc9a01_t *gc9a01,
 // This must not be called if another blit is being performed. The user code
 // should sequence access and make sure not more than one blit is performed
 // simultaneously.
+esp_err_t flow3r_bsp_gc9a01_blit_indexed(flow3r_bsp_gc9a01_t *gc9a01,
+                                      const uint8_t *fb, uint16_t palette[]);
+
 esp_err_t flow3r_bsp_gc9a01_blit_full(flow3r_bsp_gc9a01_t *gc9a01,
                                       const uint16_t *fb);
 
