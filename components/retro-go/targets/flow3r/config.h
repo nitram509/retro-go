@@ -26,8 +26,8 @@
 #define RG_SCREEN_ROTATE            0
 #define RG_SCREEN_MARGIN_TOP        0
 #define RG_SCREEN_MARGIN_BOTTOM     0
-#define RG_SCREEN_MARGIN_LEFT       15
-#define RG_SCREEN_MARGIN_RIGHT      20
+#define RG_SCREEN_MARGIN_LEFT       0
+#define RG_SCREEN_MARGIN_RIGHT      0
 
 // Input
 // TODO, MK:
