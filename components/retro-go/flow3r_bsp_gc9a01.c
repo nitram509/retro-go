@@ -85,7 +85,8 @@
 #define DISPLAY_WIDTH 240
 #define DISPLAY_HEIGHT 240
 
-static uint16_t indexed_blit_buffer[DISPLAY_WIDTH];
+#define _FB_SIZE (SPI_MAX_DMA_LEN > (DISPLAY_WIDTH * DISPLAY_HEIGHT * 2) ? DISPLAY_WIDTH * DISPLAY_HEIGHT : SPI_MAX_DMA_LEN / 2)
+static uint16_t indexed_blit_buffer[_FB_SIZE];
 static const char *TAG = "flow3r-bsp-gc9a01";
 
 // Transaction 'user' structure as used by SPI transactions to the display.
@@ -418,6 +419,9 @@ esp_err_t flow3r_bsp_gc9a01_init(flow3r_bsp_gc9a01_t *gc9a01,
     memset(gc9a01, 0, sizeof(flow3r_bsp_gc9a01_t));
     gc9a01->config = config;
 
+    printf("_FB_SIZE: %i \n", _FB_SIZE * 2);
+    printf("SPI_MAX_DMA_LEN: %i \n", SPI_MAX_DMA_LEN * 2);
+
     // Configure DC pin.
     gpio_config_t gpiocfg = {
         .pin_bit_mask = ((uint64_t)1UL << gc9a01->config->pin_dc),
@@ -610,16 +614,13 @@ static esp_err_t flow3r_bsp_gc9a01_blit_start(flow3r_bsp_gc9a01_t *gc9a01,
 
 static esp_err_t flow3r_bsp_gc9a01_blit_indexed_next(flow3r_bsp_gc9a01_blit_t *blit, uint16_t palette[]) {
     size_t size = blit->left;
-    if (size > DISPLAY_WIDTH) {
-        size = DISPLAY_WIDTH;
-    }
-    if (size > SPI_MAX_DMA_LEN) {
-        size = SPI_MAX_DMA_LEN;
+    if (size > _FB_SIZE) {
+        size = _FB_SIZE;
     }
 
     for (size_t x = 0; x < size; x++) {
-            indexed_blit_buffer[x] = palette[blit->fb[x]];
-    }    
+        indexed_blit_buffer[x] = palette[blit->fb[x]];
+    }
 
     blit->gc9a01_tx.gc9a01 = blit->gc9a01;
     blit->gc9a01_tx.dc = 1;
