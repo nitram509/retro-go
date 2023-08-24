@@ -340,6 +340,8 @@ rg_app_t *rg_system_init(int sampleRate, const rg_handlers_t *handlers, const rg
     RG_ASSERT(app.initialized == false, "rg_system_init() was already called.");
     const esp_app_desc_t *esp_app = esp_ota_get_app_description();
 
+    RG_LOGI("[rg_system_init] start");
+
     app = (rg_app_t){
         .name = esp_app->project_name,
         .version = esp_app->version,

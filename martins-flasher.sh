@@ -1,10 +1,15 @@
 #!/bin/bash
 esptool.py --chip esp32s3 \
-    -p /dev/cu.usbmodem101 \
+    -p /dev/cu.usbmodem2101 \
     -b 460800 \
     --before=default_reset \
     --after=hard_reset \
-    write_flash 0x0 retro-go_1.39-pre-4-gb7cb0-dirty_flow3r.img
+    write_flash 0x90000 ./prboom-go/build/prboom-go.bin
+
+
+# esptool.py --chip esp32s3 \
+#     -p /dev/cu.usbmodem2101 \
+#     erase_flash
 
 
 # esptool.py --chip esp32s3 \

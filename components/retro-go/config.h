@@ -1,3 +1,6 @@
+// TODO: hacky !!!
+#define RG_TARGET_FLOW3R 1
+
 #if defined(RG_TARGET_ODROID_GO)
 #include "targets/odroid-go/config.h"
 #elif defined(RG_TARGET_MRGC_G32)

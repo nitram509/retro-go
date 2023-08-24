@@ -515,6 +515,7 @@ bool is_iwad(const char *path)
 
 void app_main()
 {
+    printf("PRBOOM starting...\n");
     const rg_handlers_t handlers = {
         .loadState = &load_state_handler,
         .saveState = &save_state_handler,

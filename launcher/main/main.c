@@ -449,6 +449,7 @@ void event_handler(int event, void *arg)
 
 void app_main(void)
 {
+    printf("[debug] app main");
     const rg_handlers_t handlers = {
         .event = &event_handler,
     };
@@ -465,7 +466,7 @@ void app_main(void)
     #endif
         RG_DIALOG_END,
     };
-
+    printf("[debug] before init");
     app = rg_system_init(32000, &handlers, options);
     app->configNs = "launcher";
     app->isLauncher = true;
