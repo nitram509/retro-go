@@ -244,7 +244,7 @@ static uint16_t *line_buffer;
 static void lcd_init(void)
 {
     flow3r_bsp_display_init();
-    flow3r_bsp_display_set_backlight(25);
+    flow3r_bsp_display_set_backlight(100);
     flow3r_bsp_display_send_indexed_fb(header_data, header_data_cmap);
     line_buffer = rg_alloc(SPI_BUFFER_LENGTH * 2, MEM_DMA);
 }
@@ -990,6 +990,6 @@ void rg_display_init(void)
         .changed = true,
     };
     lcd_init();
-    rg_task_create("rg_display", &display_task, NULL, 3 * 1024, 5, 1);
+    rg_task_create("rg_display", &display_task, NULL, 3 * 1024, 5, 0);
     RG_LOGI("Display ready.\n");
 }
