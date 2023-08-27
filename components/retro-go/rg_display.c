@@ -206,8 +206,8 @@ static void lcd_set_window(int left, int top, int width, int height)
         RG_LOGW("Bad lcd window (x0=%d, y0=%d, x1=%d, y1=%d)\n", left, top, right, bottom);
     }
 
-    // ili9341_cmd(0x2A, (uint8_t[]){left >> 8, left & 0xff, right >> 8, right & 0xff}, 4); // Horiz
-    // ili9341_cmd(0x2B, (uint8_t[]){top >> 8, top & 0xff, bottom >> 8, bottom & 0xff}, 4); // Vert
+    ili9341_cmd(0x2A, (uint8_t[]){left >> 8, left & 0xff, right >> 8, right & 0xff}, 4); // Horiz
+    ili9341_cmd(0x2B, (uint8_t[]){top >> 8, top & 0xff, bottom >> 8, bottom & 0xff}, 4); // Vert
     ili9341_cmd(0x2C, NULL, 0); // Memory write
 }
 
@@ -236,8 +236,6 @@ static void lcd_send_buffer(int left, int top, int width, int height, lcd_buffer
     }
     lcd_send_data(buffer->ptr, width * height * 2);
 }
-
-static uint16_t *line_buffer;
 
 static void lcd_init(void)
 {
@@ -359,6 +357,7 @@ static void lcd_init(void)
     ILI9341_CMD(0x74, { 0x10, 0x85, 0x80, 0x00, 0x00, 0x4E, 0x00 });
     ILI9341_CMD(0x98, { 0x3e, 0x07 });
     ILI9341_CMD(0x35, { 0 });
+    ILI9341_CMD(0x36, { 0xC8 });
     ILI9341_CMD(0x21, { });
 #elif RG_SCREEN_TYPE == 32 // LCD Model (Retro-ESP32)
     ILI9341_CMD(0xCF, {0x00, 0xc3, 0x30});
@@ -717,10 +716,6 @@ static void display_task(void *arg)
             update_viewport_scaling();
             update->type = RG_UPDATE_FULL;
             display.changed = false;
-        }
-
-        if (update->type != RG_UPDATE_FULL) {
-            return;
         }
 
         if (update->type == RG_UPDATE_FULL)

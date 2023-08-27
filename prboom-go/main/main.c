@@ -565,7 +565,7 @@ void app_main()
         myargc = 5;
     }
 
-    // rg_display_clear(C_BLACK);
+    rg_display_clear(C_BLACK);
 
     printf("Impending DOOM!\n");
     Z_Init();

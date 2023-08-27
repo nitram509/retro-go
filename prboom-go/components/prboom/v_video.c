@@ -536,7 +536,7 @@ void *V_BuildPalette(int paletteNum, int bitdepth)
     }
     else if (bitdepth == 16)
     {
-        int nr = b >> 3, ng = g >> 2, nb = r >> 3;
+        int nr = r >> 3, ng = g >> 2, nb = b >> 3;
         ((uint16_t*)palette)[i] = ((nr<<11) | (ng<<5) | nb);
     }
     else if (bitdepth == 15)
