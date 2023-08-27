@@ -19,8 +19,8 @@
 // TODO, MK:
 #define RG_SCREEN_DRIVER            0   // 0 = ILI9341
 #define RG_SCREEN_HOST              SPI2_HOST
-#define RG_SCREEN_SPEED             SPI_MASTER_FREQ_40M
-#define RG_SCREEN_TYPE              32
+#define RG_SCREEN_SPEED             SPI_MASTER_FREQ_80M
+#define RG_SCREEN_TYPE              23
 #define RG_SCREEN_WIDTH             240
 #define RG_SCREEN_HEIGHT            240
 #define RG_SCREEN_ROTATE            0
@@ -69,8 +69,7 @@
 #define RG_GPIO_GAMEPAD_OPTION      GPIO_NUM_0
 
 // SPI Display
-// TODO, MK: is the MISO pin required? (not specified in flow3r-minimal)
-#define RG_GPIO_LCD_MISO            GPIO_NUM_19
+#define RG_GPIO_LCD_MISO            GPIO_NUM_NC
 #define RG_GPIO_LCD_MOSI            42
 #define RG_GPIO_LCD_CLK             41
 #define RG_GPIO_LCD_CS              40

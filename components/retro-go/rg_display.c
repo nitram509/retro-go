@@ -18,9 +18,6 @@
 #include <driver/ledc.h>
 #endif
 
-#include "flow3r_bsp_display.h"
-#include "doom.h"
-
 #define SPI_TRANSACTION_COUNT (8)
 #define SPI_BUFFER_COUNT      (5)
 #define SPI_BUFFER_LENGTH     (240 * 4) // In pixels (uint16)
@@ -209,8 +206,8 @@ static void lcd_set_window(int left, int top, int width, int height)
         RG_LOGW("Bad lcd window (x0=%d, y0=%d, x1=%d, y1=%d)\n", left, top, right, bottom);
     }
 
-    ili9341_cmd(0x2A, (uint8_t[]){left >> 8, left & 0xff, right >> 8, right & 0xff}, 4); // Horiz
-    ili9341_cmd(0x2B, (uint8_t[]){top >> 8, top & 0xff, bottom >> 8, bottom & 0xff}, 4); // Vert
+    // ili9341_cmd(0x2A, (uint8_t[]){left >> 8, left & 0xff, right >> 8, right & 0xff}, 4); // Horiz
+    // ili9341_cmd(0x2B, (uint8_t[]){top >> 8, top & 0xff, bottom >> 8, bottom & 0xff}, 4); // Vert
     ili9341_cmd(0x2C, NULL, 0); // Memory write
 }
 
@@ -241,15 +238,8 @@ static void lcd_send_buffer(int left, int top, int width, int height, lcd_buffer
 }
 
 static uint16_t *line_buffer;
-static void lcd_init(void)
-{
-    flow3r_bsp_display_init();
-    flow3r_bsp_display_set_backlight(100);
-    flow3r_bsp_display_send_indexed_fb(header_data, header_data_cmap);
-    line_buffer = rg_alloc(SPI_BUFFER_LENGTH * 2, MEM_DMA);
-}
 
-static void lcd_init_retro_go(void)
+static void lcd_init(void)
 {
 #if defined(RG_GPIO_LCD_BCKL)
     // Initialize backlight at 0% to avoid the lcd reset flash
@@ -323,6 +313,53 @@ static void lcd_init_retro_go(void)
 #elif RG_SCREEN_TYPE == 2 // LCD Model (QT-PY Gamer)
     ILI9341_CMD(0x36, {0xC0});
     ILI9341_CMD(0x21, {}); // Invert colors
+#elif RG_SCREEN_TYPE == 23 // LCD Model (flow3r)
+    ILI9341_CMD(0xef, { 0 });
+    ILI9341_CMD(0xeb, { 0x14 });
+    ILI9341_CMD(0xfe, { 0 });
+    ILI9341_CMD(0xef, { 0 });
+    ILI9341_CMD(0xeb, { 0x14 });
+    ILI9341_CMD(0x84, { 0x40 });
+    ILI9341_CMD(0x85, { 0xff });
+    ILI9341_CMD(0x86, { 0xff });
+    ILI9341_CMD(0x87, { 0xff });
+    ILI9341_CMD(0x88, { 0x0a });
+    ILI9341_CMD(0x89, { 0x21 });
+    ILI9341_CMD(0x8a, { 0x00 });
+    ILI9341_CMD(0x8b, { 0x80 });
+    ILI9341_CMD(0x8c, { 0x01 });
+    ILI9341_CMD(0x8d, { 0x01 });
+    ILI9341_CMD(0x8e, { 0xff });
+    ILI9341_CMD(0x8f, { 0xff });
+    ILI9341_CMD(0xB6, { 0x00, 0x20 });
+    ILI9341_CMD(0x90, { 0x08, 0x08, 0x08, 0x08 });
+    ILI9341_CMD(0xbd, { 0x06 });
+    ILI9341_CMD(0xbc, { 0x00 });
+    ILI9341_CMD(0xff, { 0x60, 0x01, 0x04 });
+    ILI9341_CMD(0xC3, { 0x13 });
+    ILI9341_CMD(0xC4, { 0x13 });
+    ILI9341_CMD(0xC9, { 0x22 });
+    ILI9341_CMD(0xbe, { 0x11 });
+    ILI9341_CMD(0xe1, { 0x10, 0x0e });
+    ILI9341_CMD(0xdf, { 0x21, 0x0c, 0x02 });
+    ILI9341_CMD(0xF0, { 0x45, 0x09, 0x08, 0x08, 0x26, 0x2a });
+    ILI9341_CMD(0xF1, { 0x43, 0x70, 0x72, 0x36, 0x37, 0x6f });
+    ILI9341_CMD(0xF2, { 0x45, 0x09, 0x08, 0x08, 0x26, 0x2a });
+    ILI9341_CMD(0xF3, { 0x43, 0x70, 0x72, 0x36, 0x37, 0x6f });
+    ILI9341_CMD(0xed, { 0x1b, 0x0b });
+    ILI9341_CMD(0xae, { 0x77 });
+    ILI9341_CMD(0xcd, { 0x63 });
+    ILI9341_CMD(0x70, { 0x07, 0x07, 0x04, 0x0e, 0x0f, 0x09, 0x07, 0x08, 0x03 });
+    ILI9341_CMD(0xE8, { 0x34 });
+    ILI9341_CMD(0x62, { 0x18, 0x0D, 0x71, 0xED, 0x70, 0x70, 0x18, 0x0F, 0x71, 0xEF, 0x70, 0x70 });
+    ILI9341_CMD(0x63, { 0x18, 0x11, 0x71, 0xF1, 0x70, 0x70, 0x18, 0x13, 0x71, 0xF3, 0x70, 0x70 });
+    ILI9341_CMD(0x64, { 0x28, 0x29, 0xF1, 0x01, 0xF1, 0x00, 0x07 });
+    ILI9341_CMD(0x66, { 0x3C, 0x00, 0xCD, 0x67, 0x45, 0x45, 0x10, 0x00, 0x00, 0x00 });
+    ILI9341_CMD(0x67, { 0x00, 0x3C, 0x00, 0x00, 0x00, 0x01, 0x54, 0x10, 0x32, 0x98 });
+    ILI9341_CMD(0x74, { 0x10, 0x85, 0x80, 0x00, 0x00, 0x4E, 0x00 });
+    ILI9341_CMD(0x98, { 0x3e, 0x07 });
+    ILI9341_CMD(0x35, { 0 });
+    ILI9341_CMD(0x21, { });
 #elif RG_SCREEN_TYPE == 32 // LCD Model (Retro-ESP32)
     ILI9341_CMD(0xCF, {0x00, 0xc3, 0x30});
     ILI9341_CMD(0xED, {0x64, 0x03, 0x12, 0x81});
@@ -464,7 +501,7 @@ static inline void write_rect(int left, int top, int width, int height,
     const int screen_top = display.viewport.y_pos + scaled_top;
     const int screen_left = display.viewport.x_pos + scaled_left;
     const int screen_bottom = RG_MIN(screen_top + scaled_height, screen_height);
-    const int lines_per_buffer = 1;
+    const int lines_per_buffer = SPI_BUFFER_LENGTH / scaled_width;
     const int ix_acc = (x_inc * scaled_left) % screen_width;
     const int filter_mode = config.scaling ? config.filter : 0;
     const bool filter_y = filter_mode == RG_DISPLAY_FILTER_VERT || filter_mode == RG_DISPLAY_FILTER_BOTH;
@@ -473,7 +510,124 @@ static inline void write_rect(int left, int top, int width, int height,
     const int stride = display.source.stride;
     union { const uint8_t *u8; const uint16_t *u16; } buffer;
 
-    flow3r_bsp_display_send_indexed_fb(framebuffer, palette);
+    if (scaled_width < 1 || scaled_height < 1)
+    {
+        return;
+    }
+
+    buffer.u8 = framebuffer + display.source.offset + (top * stride) + (left * display.source.pixlen);
+
+    lcd_set_window(
+        screen_left + RG_SCREEN_MARGIN_LEFT,
+        screen_top + RG_SCREEN_MARGIN_TOP,
+        scaled_width,
+        scaled_height
+    );
+
+    for (int y = 0, screen_y = screen_top; y < height;)
+    {
+        int lines_to_copy = RG_MIN(lines_per_buffer, screen_bottom - screen_y);
+
+        // The vertical filter requires a block to start and end with unscaled lines
+        if (filter_y)
+        {
+            while (lines_to_copy > 1 && (screen_line_is_empty[screen_y + lines_to_copy - 1] ||
+                                         screen_line_is_empty[screen_y + lines_to_copy]))
+                --lines_to_copy;
+        }
+
+        if (lines_to_copy < 1)
+        {
+            break;
+        }
+
+        uint16_t *line_buffer = lcd_get_buffer().ptr;
+        uint16_t *line_buffer_ptr = line_buffer;
+
+        for (int i = 0; i < lines_to_copy; ++i)
+        {
+            if (i > 0 && screen_line_is_empty[screen_y])
+            {
+                memcpy(line_buffer_ptr, line_buffer_ptr - scaled_width, scaled_width * 2);
+                line_buffer_ptr += scaled_width;
+            }
+            else
+            {
+                #define RENDER_LINE(pixel) { \
+                    for (int x = 0, x_acc = ix_acc; x < width;) { \
+                        *line_buffer_ptr++ = (pixel); \
+                        x_acc += x_inc; \
+                        while (x_acc >= screen_width) { \
+                            x_acc -= screen_width; \
+                            ++x; \
+                        } \
+                    } \
+                }
+                if (format & RG_PIXEL_PAL)
+                    RENDER_LINE(palette[buffer.u8[x]])
+                else if (format & RG_PIXEL_LE)
+                    RENDER_LINE((buffer.u16[x] << 8) | (buffer.u16[x] >> 8))
+                else
+                    RENDER_LINE(buffer.u16[x])
+            }
+
+            if (!screen_line_is_empty[++screen_y])
+            {
+                buffer.u8 += stride;
+                ++y;
+            }
+        }
+
+        if (filter_y || filter_x)
+        {
+            const int top = screen_y - lines_to_copy;
+
+            for (int y = 0, fill_line = -1; y < lines_to_copy; y++)
+            {
+                if (filter_y && y && screen_line_is_empty[top + y])
+                {
+                    fill_line = y;
+                    continue;
+                }
+
+                // Filter X
+                if (filter_x)
+                {
+                    uint16_t *buffer = line_buffer + y * scaled_width;
+                    for (int x = 0, frame_x = 0, prev_frame_x = -1, x_acc = ix_acc; x < scaled_width; ++x)
+                    {
+                        if (frame_x == prev_frame_x && x > 0 && x + 1 < scaled_width)
+                        {
+                            buffer[x] = blend_pixels(buffer[x - 1], buffer[x + 1]);
+                        }
+                        prev_frame_x = frame_x;
+
+                        x_acc += x_inc;
+                        while (x_acc >= screen_width)
+                        {
+                            x_acc -= screen_width;
+                            ++frame_x;
+                        }
+                    }
+                }
+
+                // Filter Y
+                if (filter_y && fill_line > 0)
+                {
+                    uint16_t *lineA = line_buffer + (fill_line - 1) * scaled_width;
+                    uint16_t *lineB = line_buffer + (fill_line + 0) * scaled_width;
+                    uint16_t *lineC = line_buffer + (fill_line + 1) * scaled_width;
+                    for (size_t x = 0; x < scaled_width; ++x)
+                    {
+                        lineB[x] = blend_pixels(lineA[x], lineC[x]);
+                    }
+                    fill_line = -1;
+                }
+            }
+        }
+
+        lcd_send_data(line_buffer, scaled_width * lines_to_copy * 2);
+    }
 }
 
 static void update_viewport_scaling(void)
