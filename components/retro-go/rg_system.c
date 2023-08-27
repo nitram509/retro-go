@@ -413,7 +413,7 @@ rg_app_t *rg_system_init(int sampleRate, const rg_handlers_t *handlers, const rg
 
     rg_display_init();
     rg_gui_init();
-    // rg_audio_init(sampleRate);
+    rg_audio_init(sampleRate);
 
     // rg_storage_set_activity_led(rg_storage_get_activity_led());
     rg_gui_draw_hourglass();

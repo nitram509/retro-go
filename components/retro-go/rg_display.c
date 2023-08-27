@@ -1139,6 +1139,6 @@ void rg_display_init(void)
         .changed = true,
     };
     lcd_init();
-    rg_task_create("rg_display", &display_task, NULL, 3 * 1024, 5, 0);
+    rg_task_create("rg_display", &display_task, NULL, 3 * 1024, 5, 1);
     RG_LOGI("Display ready.\n");
 }

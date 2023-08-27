@@ -13,7 +13,7 @@
 // Audio
 // TODO, MK: enable only, when sound driver ported
 #define RG_AUDIO_USE_INT_DAC        0   // 0 = Disable, 1 = GPIO25, 2 = GPIO26, 3 = Both
-#define RG_AUDIO_USE_EXT_DAC        0   // 0 = Disable, 1 = Enable
+#define RG_AUDIO_USE_EXT_DAC        1   // 0 = Disable, 1 = Enable
 
 // Video
 // TODO, MK:
