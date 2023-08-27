@@ -20,7 +20,7 @@
 
 #define SPI_TRANSACTION_COUNT (8)
 #define SPI_BUFFER_COUNT      (5)
-#define SPI_BUFFER_LENGTH     (240 * 4) // In pixels (uint16)
+#define SPI_BUFFER_LENGTH     (320 * 4) // In pixels (uint16)
 
 static spi_device_handle_t spi_dev;
 static QueueHandle_t spi_transactions;

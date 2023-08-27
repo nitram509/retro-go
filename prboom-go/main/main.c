@@ -529,7 +529,6 @@ void app_main()
 
     app = rg_system_init(AUDIO_SAMPLE_RATE, &handlers, options);
     app->refreshRate = TICRATE;
-    app->logLevel = RG_LOG_DEBUG;
 
     update.buffer = rg_alloc(SCREENHEIGHT*SCREENWIDTH, MEM_FAST);
 
