@@ -41,6 +41,12 @@ bool rg_i2c_init(void)
     TRY(i2c_driver_install(I2C_NUM_0, I2C_MODE_MASTER, 0, 0, 0));
     RG_LOGI("I2C driver ready (SDA:%d SCL:%d).\n", i2c_config.sda_io_num, i2c_config.scl_io_num);
     i2c_initialized = true;
+    #ifdef RG_TARGET_FLOW3R
+    // disable io port extender to enable headphones
+    uint8_t tx = 0;
+    uint8_t rx = 0;
+    i2c_master_write_read_device(I2C_NUM_0, 0x6e, &rx, sizeof(tx), &rx, sizeof(rx), 1000 / portTICK_PERIOD_MS);
+    #endif
     return true;
 fail:
     RG_LOGE("Failed to initialize I2C driver. err=0x%x\n", err);

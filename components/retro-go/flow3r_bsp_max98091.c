@@ -130,58 +130,18 @@ void flow3r_bsp_max98091_init(void) {
     vTaskDelay(10 / portTICK_PERIOD_MS);
 
     POKE(DEVICE_SHUTDOWN, 0);
-    // pclk = mclk / 1
     POKE(SYSTEM_CLOCK, MAX98091_BITS(SYSTEM_CLOCK_PSCLK, 1));
-    // music, dc filter in record and playback
-    POKE(FILTER_CONFIGURATION, (1 << 7) | (1 << 6) | (1 << 5) | (1 << 2));
-    // Sets up DAI for left-justified slave mode operation.
     POKE(DAI_INTERFACE, 1 << 2);
-    // Sets up the DAC to speaker path
-    POKE(DAC_PATH, 1 << 5);
-
-    // Somehow this was needed to get an input signal to the ADC, even though
-    // all other registers should be taken care of later. Don't know why.
-    // Sets up the line in to adc path
-    POKE(LINE_TO_ADC, 1 << 6);
-
-    // SDOUT, SDIN enabled
-    POKE(IO_CONFIGURATION, (1 << 1) | (1 << 0));
-    // bandgap bias
+    POKE(DAC_PATH, 1 << 7 | 1 << 5);
+    POKE(IO_CONFIGURATION, 1 << 0);
     POKE(BIAS_CONTROL, 1 << 0);
-    // high performane mode
     POKE(DAC_CONTROL, 1 << 0);
-
-    // enable micbias, line input amps, ADCs
-    POKE(INPUT_ENABLE, (1 << 4) | (1 << 3) | (1 << 2) | (1 << 1) | (1 << 0));
-    // IN3 SE -> Line A, IN4 SE -> Line B
-    POKE(LINE_INPUT_CONFIG, (1 << 3) | (1 << 2));
-    // 64x oversampling, dithering, high performance ADC
-    POKE(ADC_CONTROL, (1 << 1) | (1 << 0));
-
-    POKE(DIGITAL_MIC_ENABLE, 0);
-    // IN5/IN6 to MIC1
-    POKE(INPUT_MODE, (1 << 0));
-
-    max98091_check(MAX98091_DIGITAL_MIC_ENABLE,
-                   MAX98091_BITS(DIGITAL_MIC_ENABLE_DMICCLK, 3) |
-                       MAX98091_BOOL(DIGITAL_MIC_ENABLE_DIGMIC1L, false) |
-                       MAX98091_BOOL(DIGITAL_MIC_ENABLE_DIGMIC1R, false));
-    max98091_check(MAX98091_LEFT_ADC_MIXER, 0);
-    max98091_check(MAX98091_RIGHT_ADC_MIXER, 0);
-
-    // output enable: enable dacs
-    POKE(OUTPUT_ENABLE, (1 << 1) | (1 << 0));
-    // power up
     POKE(DEVICE_SHUTDOWN, 1 << 7);
-    // enable outputs, dacs
-    POKE(OUTPUT_ENABLE,
-         (1 << 7) | (1 << 6) | (1 << 5) | (1 << 4) | (1 << 1) | (1 << 0));
-    // disable all digital filters except for dc blocking
     POKE(DSP_FILTER_ENABLE, 0x0);
+    POKE(JACK_DETECT, 0);
+    ESP_LOGI(TAG, "Codec initilialied! Don't worry about the readback errors above.");
 
-    // TODO(q3k): mute this
-    ESP_LOGI(
-        TAG,
-        "Codec initilialied! Don't worry about the readback errors above.");
 #undef POKE
+    flow3r_bsp_max98091_headphones_set_volume(false, -10);
+    flow3r_bsp_max98091_speaker_set_volume(false, -5);
 }
