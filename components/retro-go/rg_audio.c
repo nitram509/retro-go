@@ -66,9 +66,16 @@ static const char *SETTING_OUTPUT = "AudioSink";
 static const char *SETTING_VOLUME = "Volume";
 static const char *SETTING_FILTER = "AudioFilter";
 
+#ifdef RG_TARGET_FLOW3R
+#include "flow3r_bsp_max98091.h"
+#endif
 
 void rg_audio_init(int sampleRate)
 {
+    #ifdef RG_TARGET_FLOW3R
+    flow3r_bsp_max98091_init();
+    #endif
+
     RG_ASSERT(audio.sink == NULL, "Audio sink already initialized!");
 
     CREATE_DEVICE_LOCK();
@@ -118,7 +125,13 @@ void rg_audio_init(int sampleRate)
             .sample_rate = sampleRate,
             .bits_per_sample = 16,
             .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
-        #ifdef RG_TARGET_ESPLAY_S3
+        #ifdef RG_TARGET_FLOW3R
+            .communication_format = I2S_COMM_FORMAT_STAND_I2S | I2S_COMM_FORMAT_STAND_MSB,
+            .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1, // ESP_INTR_FLAG_LEVEL1
+            .dma_buf_count = 8, // Goal is to have ~800 samples over 2-8 buffers (3x270 or 5x180 are pretty good)
+            .dma_buf_len = 480,
+            .use_apll = false, // S3 cant use apll
+        #elif RG_TARGET_ESPLAY_S3
             .communication_format = I2S_COMM_FORMAT_STAND_I2S | I2S_COMM_FORMAT_STAND_MSB,
             .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1, // ESP_INTR_FLAG_LEVEL1
             .dma_buf_count = 8, // Goal is to have ~800 samples over 2-8 buffers (3x270 or 5x180 are pretty good)
@@ -136,9 +149,12 @@ void rg_audio_init(int sampleRate)
         {
             ret = i2s_set_pin(I2S_NUM_0, &(i2s_pin_config_t) {
                 .bck_io_num = RG_GPIO_SND_I2S_BCK,
+                #ifdef RG_TARGET_FLOW3R
+                .mck_io_num = 18,
+                #endif
                 .ws_io_num = RG_GPIO_SND_I2S_WS,
                 .data_out_num = RG_GPIO_SND_I2S_DATA,
-                .data_in_num = GPIO_NUM_NC
+                .data_in_num = GPIO_NUM_NC,
             });
         }
         error_code = ret;

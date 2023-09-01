@@ -54,8 +54,8 @@
 #define RG_GPIO_LED                 GPIO_NUM_2
 
 // I2C BUS
-// #define RG_GPIO_I2C_SDA             GPIO_NUM_15
-// #define RG_GPIO_I2C_SCL             GPIO_NUM_4
+#define RG_GPIO_I2C_SDA             2
+#define RG_GPIO_I2C_SCL             1
 
 // Built-in gamepad
 // TODO, MK:
@@ -88,7 +88,7 @@
 
 // External I2S DAC
 // TODO, MK:
-#define RG_GPIO_SND_I2S_BCK         0 // GPIO_NUM_4
-#define RG_GPIO_SND_I2S_WS          0 // GPIO_NUM_12
-#define RG_GPIO_SND_I2S_DATA        0 // GPIO_NUM_15
-// #define RG_GPIO_SND_AMP_ENABLE      GPIO_NUM_NC
+#define RG_GPIO_SND_I2S_BCK         10
+#define RG_GPIO_SND_I2S_WS          11
+#define RG_GPIO_SND_I2S_DATA        12
+#define RG_GPIO_SND_AMP_ENABLE      GPIO_NUM_NC

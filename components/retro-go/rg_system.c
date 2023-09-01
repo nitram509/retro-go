@@ -390,6 +390,7 @@ rg_app_t *rg_system_init(int sampleRate, const rg_handlers_t *handlers, const rg
     RG_LOGI("External memory: free=%d, total=%d\n", statistics.freeMemoryExt, statistics.totalMemoryExt);
 
     rg_storage_init();
+    rg_i2c_init();
     // rg_input_init();
 
     // // Test for recovery request as early as possible
